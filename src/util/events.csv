@@ -1,0 +1,9 @@
+date,venue,city,country,ticketUrl,status,galleryUrl
+2026-02-14,CROBAR,Buenos Aires,Argentina,https://tickets.example.com/epic-feb-2026,upcoming,
+2026-05-20,The Warehouse,Santiago,Chile,https://tickets.example.com/epic-may-2026,upcoming,
+2025-03-15,Club XYZ,Santiago,Chile,https://tickets.example.com/epic-march,upcoming,
+2025-06-21,Arena 360,Buenos Aires,Argentina,https://tickets.example.com/epic-june,upcoming,
+2024-12-01,Warehouse District,Lima,Peru,,past,https://photos.google.com/epic-lima-dec
+2024-09-14,Beach Club,Montevideo,Uruguay,,past,https://photos.google.com/epic-montevideo-sep
+2024-06-22,Downtown Arena,Bogotá,Colombia,,past,https://photos.google.com/epic-bogota-jun
+2024-03-08,Rooftop Lounge,Santiago,Chile,,past,https://photos.google.com/epic-santiago-mar
