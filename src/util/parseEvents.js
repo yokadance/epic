@@ -1,6 +1,6 @@
 export async function parseEventsCSV() {
   try {
-    const response = await fetch('/src/util/events.csv');
+    const response = await fetch('/events.csv');
     const csvText = await response.text();
 
     const lines = csvText.trim().split('\n');
