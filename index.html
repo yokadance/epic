@@ -338,9 +338,17 @@
       transition: left .28s cubic-bezier(.2,.8,.2,1), right .28s cubic-bezier(.2,.8,.2,1);
     }
     #ev-deskbar > a:not(:last-child):hover::after { left: 0; right: 0; }
+
+    /* ── Signal canvas ── */
+    #ev-signal {
+      position: fixed; inset: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 3;
+    }
   </style>
 </helmet>
 
+<!-- Signal noise canvas -->
+<canvas id="ev-signal" aria-hidden="true"></canvas>
 <!-- Cursor personalizado -->
 <div class="ev-cursor-dot" id="ev-cursor-dot" aria-hidden="true"></div>
 <div class="ev-cursor-ring" id="ev-cursor-ring" aria-hidden="true"></div>
@@ -925,6 +933,112 @@ class Component extends DCLogic {
         if (_c1) _c1();
         document.removeEventListener('mousemove', onMouseMove);
         cancelAnimationFrame(ringRaf);
+      };
+    }
+
+    // ── Signal noise + wave reactiva al scroll ──
+    const sigCanvas = document.getElementById('ev-signal');
+    if (sigCanvas) {
+      const sctx = sigCanvas.getContext('2d');
+      const resizeSig = () => {
+        sigCanvas.width  = window.innerWidth;
+        sigCanvas.height = window.innerHeight;
+      };
+      resizeSig();
+      window.addEventListener('resize', resizeSig);
+
+      let sigPrevSY    = window.scrollY;
+      let waveAmp      = 0;
+      let lastGlitchTs = 0;
+      let glitches     = [];
+      let sigFrame     = 0;
+      let sigRaf;
+
+      const triggerGlitch = (ts) => {
+        lastGlitchTs = ts;
+        const n = Math.random() < 0.4 ? 2 : 1;
+        for (let i = 0; i < n; i++) {
+          glitches.push({
+            y:    Math.random() * sigCanvas.height,
+            h:    Math.random() * 3 + 1,
+            a:    0.13 + Math.random() * 0.17,
+            life: 55 + Math.random() * 85,
+            born: ts
+          });
+        }
+      };
+
+      const animateSignal = (ts) => {
+        const t   = ts * 0.001;
+        const sy  = window.scrollY;
+        const vel = Math.abs(sy - sigPrevSY);
+        sigPrevSY = sy;
+        const w = sigCanvas.width, h = sigCanvas.height;
+
+        // Amplitud sube con velocidad de scroll, decae sola
+        waveAmp = Math.min(115, waveAmp + vel * 2.4);
+        waveAmp *= 0.91;
+
+        // Glitch strips al scrollear rápido (throttled 240ms)
+        if (vel > 11 && ts - lastGlitchTs > 240) triggerGlitch(ts);
+
+        sctx.clearRect(0, 0, w, h);
+
+        // 1. Grain de señal — cada 3 frames para no saturar
+        sigFrame++;
+        if (sigFrame % 3 === 0) {
+          const n = Math.floor(w * h * 0.003);
+          for (let i = 0; i < n; i++) {
+            const gx = Math.random() * w;
+            const gy = Math.random() * h;
+            const ga = (Math.random() * 0.065).toFixed(3);
+            sctx.fillStyle = `rgba(160,0,0,${ga})`;
+            sctx.fillRect(gx, gy, 1, 1);
+          }
+        }
+
+        // 2. Wave distorsionada (fundamental + armónicos + ruido)
+        if (waveAmp > 1) {
+          sctx.save();
+          sctx.shadowBlur  = 14;
+          sctx.shadowColor = '#CC0000';
+          const alpha = Math.min(0.88, waveAmp / 78);
+          sctx.strokeStyle = `rgba(204,0,0,${alpha.toFixed(3)})`;
+          sctx.lineWidth = 1.5;
+          sctx.beginPath();
+          const cy = h * 0.5;
+          for (let x = 0; x <= w; x += 3) {
+            const nx = x / w;
+            const y  = cy
+              + Math.sin(nx * 5  * Math.PI + t * 3.2) * waveAmp
+              + Math.sin(nx * 17 * Math.PI + t * 5.9) * waveAmp * 0.26
+              + Math.sin(nx * 43 * Math.PI + t * 2.3) * waveAmp * 0.10
+              + (Math.random() - 0.5) * waveAmp * 0.13;
+            x === 0 ? sctx.moveTo(x, y) : sctx.lineTo(x, y);
+          }
+          sctx.stroke();
+          sctx.restore();
+        }
+
+        // 3. Glitch strips
+        glitches = glitches.filter(g => {
+          const age = ts - g.born;
+          if (age > g.life) return false;
+          const prog = age / g.life;
+          sctx.fillStyle = `rgba(204,0,0,${(g.a * (1 - prog)).toFixed(3)})`;
+          sctx.fillRect(0, g.y, w, g.h);
+          return true;
+        });
+
+        sigRaf = requestAnimationFrame(animateSignal);
+      };
+      sigRaf = requestAnimationFrame(animateSignal);
+
+      const _cs = this._cleanup;
+      this._cleanup = () => {
+        if (_cs) _cs();
+        cancelAnimationFrame(sigRaf);
+        window.removeEventListener('resize', resizeSig);
       };
     }
 
