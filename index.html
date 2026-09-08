@@ -153,6 +153,21 @@
     .ev-flyer-cta { display:inline-block; padding:12px 19px; background:#CC0000; color:#fff; text-decoration:none; font-family:'Space Grotesk',sans-serif; font-size:11px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; transition:background .2s ease, transform .2s ease; }
     .ev-flyer-cta:hover, .ev-flyer-cta:focus-visible { background:#e50000; transform:translateY(-2px); outline:none; }
 
+    .ev-archive { padding:clamp(72px,11vw,130px) 6%; background:#0a0a0a; border-top:1px solid rgba(255,255,255,.06); }
+    .ev-archive-head { display:flex; align-items:end; justify-content:space-between; gap:24px; margin-bottom:clamp(28px,4vw,44px); }
+    .ev-archive-hint { font-family:'Space Grotesk',sans-serif; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.3); white-space:nowrap; }
+    .ev-archive-rail { display:flex; gap:12px; overflow-x:auto; padding:2px 2px 15px; margin:0 -2px; scroll-snap-type:x mandatory; scrollbar-color:#CC0000 #171717; scrollbar-width:thin; }
+    .ev-archive-rail::-webkit-scrollbar { height:4px; }
+    .ev-archive-rail::-webkit-scrollbar-track { background:#171717; }
+    .ev-archive-rail::-webkit-scrollbar-thumb { background:#CC0000; }
+    .ev-archive-card { position:relative; flex:0 0 clamp(225px,23vw,310px); min-height:260px; display:flex; flex-direction:column; justify-content:space-between; padding:22px; overflow:hidden; scroll-snap-align:start; border:1px solid rgba(255,255,255,.11); background:linear-gradient(145deg,#161616,#090909); color:#fff; text-decoration:none; transition:transform .3s ease, border-color .3s ease, background .3s ease; }
+    .ev-archive-card::before { content:''; position:absolute; top:-44px; right:-16px; width:155px; height:155px; border:1px solid rgba(204,0,0,.24); border-radius:50%; box-shadow:0 0 55px rgba(204,0,0,.1); }
+    .ev-archive-card:hover, .ev-archive-card:focus-visible { transform:translateY(-5px); border-color:#CC0000; background:linear-gradient(145deg,#211013,#090909); outline:none; }
+    .ev-archive-edition { position:relative; font-family:'Bebas Neue',sans-serif; font-size:clamp(28px,3.1vw,42px); letter-spacing:.06em; line-height:1; color:#CC0000; }
+    .ev-archive-title { position:relative; display:block; max-width:85%; font-family:'Bebas Neue',sans-serif; font-size:clamp(27px,3vw,40px); letter-spacing:.045em; line-height:.96; }
+    .ev-archive-info { position:relative; padding-top:14px; border-top:1px solid rgba(255,255,255,.12); font-family:'Space Grotesk',sans-serif; font-size:10px; letter-spacing:.14em; line-height:1.65; text-transform:uppercase; color:rgba(255,255,255,.48); }
+    .ev-archive-action { position:relative; display:block; margin-top:13px; font-family:'Space Grotesk',sans-serif; font-size:10px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:#fff; }
+
     /* Génesis contiene un manifiesto largo: en vez de forzarlo a una columna
        angosta dentro de un viewport fijo, se lee como una pieza editorial. */
     #ev-genesis-center {
@@ -228,6 +243,8 @@
       .ev-gallery-item:nth-child(5) { grid-column: span 7; grid-row: span 2; }
       .ev-gallery-open { opacity: 1; transform: none; }
       .ev-flyer-footer { align-items:flex-start; flex-direction:column; }
+      .ev-archive-head { align-items:flex-start; flex-direction:column; }
+      .ev-archive-card { flex-basis:78vw; min-height:240px; }
 
       /* En móvil el manifiesto vuelve al flujo del documento: no hay texto
          oculto ni necesidad de desplazarlo dentro de una pantalla sticky. */
@@ -425,7 +442,7 @@
       </div>
 
       <div data-ef="bottom" data-delay="0.44" data-dur="0.36" style="opacity:0;will-change:transform,opacity;">
-        <p style="font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,1.5vw,16px);color:rgba(255,255,255,0.55);line-height:1.85;font-weight:300;text-wrap:pretty;">Toda estructura sólida posee un origen anclado en la hospitalidad genuina: EPIC no surgió como una ambición comercial, sino de la visión de comprender el encuentro humano como una forma superior de arte, en la calidez de un hogar propio donde la mística sonora se compartía bajo el resguardo de la intimidad. El desprendimiento de ese primer refugio físico marcó el punto de inflexión: la intuición se transformó en certeza operativa — si era posible diseñar mundos de alta calidad dentro de una casa, era el momento de construirlos para el mundo exterior. Esa chispa inicial evolucionó hacia una curaduría artesanal, sostenida por la precisión técnica y el rigor de una producción de nivel internacional, conquistada con un único fin: otorgar libertad, asegurando mediante un cuidado silencioso que cada encuentro sea un lugar seguro donde la magia se protege — y lo que alguna vez comenzó bajo un techo personal, hoy florece en la celebración vibrante de una gran familia.</p>
+        <p style="font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,1.5vw,16px);color:rgba(255,255,255,0.55);line-height:1.85;font-weight:300;text-wrap:pretty;">EPIC no nació de una ambición comercial, sino de la hospitalidad genuina: el encuentro humano como la forma más alta de arte, primero en la intimidad de un hogar. Esa chispa se volvió curaduría artesanal y rigor internacional al servicio de la libertad. Hoy, una gran familia.</p>
       </div>
     </div>
 
@@ -526,6 +543,28 @@
       </div>
     </div>
   </sc-for>
+</section>
+
+<!-- ════════════════════════════ ARCHIVO ════════════════════════════ -->
+<section id="archivo" class="ev-archive" aria-labelledby="ev-archive-title">
+  <div class="ev-archive-head" data-reveal>
+    <div>
+      <p style="font-family:'Space Grotesk',sans-serif;font-size:clamp(10px,1.1vw,12px);letter-spacing:.32em;text-transform:uppercase;color:#CC0000;margin-bottom:14px;">El archivo</p>
+      <h2 id="ev-archive-title" style="font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,8.5vw,106px);color:#fff;letter-spacing:.04em;line-height:1;">Noches que quedan</h2>
+    </div>
+    <p class="ev-archive-hint">Deslizá para recorrer →</p>
+  </div>
+
+  <div class="ev-archive-rail" aria-label="Eventos pasados de EPIC">
+    <sc-for list="{{ archiveEvents }}" as="ev" hint-placeholder-count="8">
+      <a class="ev-archive-card" href="{{ ev.instagramUrl }}" target="_blank" rel="noreferrer" aria-label="Ver fotos de {{ ev.title }} en Instagram">
+        <span class="ev-archive-edition">{{ ev.edition }}</span>
+        <span class="ev-archive-title">{{ ev.title }}</span>
+        <span class="ev-archive-info">{{ ev.dateLabel }}<br>{{ ev.venue }}</span>
+        <span class="ev-archive-action">Ver fotos ↗</span>
+      </a>
+    </sc-for>
+  </div>
 </section>
 
 <!-- ════════════════════════════ CONTACTO ════════════════════════════ -->
@@ -769,7 +808,10 @@ class Component extends DCLogic {
       if (!b.date) return -1;
       return new Date(a.date) - new Date(b.date);
     });
-    const agendaEvents = sorted.slice(-4).map(ev => {
+    const archiveEvents = sorted
+      .filter(ev => ev.date && new Date(ev.date) < now && ev.instagramUrl)
+      .reverse();
+    const agendaEvents = sorted.filter(ev => !ev.date || new Date(ev.date) >= now).map(ev => {
       const evDate = ev.date ? new Date(ev.date) : null;
       const isPast = evDate && evDate < now;
       const isSoon = !ev.date;
@@ -801,6 +843,7 @@ class Component extends DCLogic {
 
     return {
       agendaEvents,
+      archiveEvents,
       h0: fade(200),
       h1: fade(550),
       h2: fade(850),
