@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="/support.js"></script>
 </head>
 <body>
@@ -34,15 +36,30 @@
       to   { transform: scaleX(1); }
     }
 
+    /* Apple-style scroll animations */
     @supports (animation-timeline: view()) {
       [data-reveal] {
-        animation: ev-fade-up 0.7s ease both;
+        animation: ev-fade-up 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
         animation-timeline: view();
-        animation-range: entry 5% entry 55%;
+        animation-range: entry 0% entry 50%;
       }
       [data-reveal="slow"] {
-        animation-duration: 1s;
-        animation-range: entry 5% entry 65%;
+        animation-duration: 1.2s;
+        animation-range: entry 0% entry 60%;
+      }
+    }
+
+    /* Fallback for browsers without animation-timeline */
+    @supports not (animation-timeline: view()) {
+      [data-reveal] {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                    transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+      [data-reveal].visible {
+        opacity: 1;
+        transform: translateY(0);
       }
     }
 
@@ -51,8 +68,7 @@
       position: absolute;
       pointer-events: none;
       opacity: 0;
-      transition: opacity 0.8s ease;
-      will-change: transform, opacity;
+      transition: opacity 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       z-index: 5;
     }
     .floating-obj img {
@@ -69,6 +85,87 @@
       opacity: 0.95;
     }
 
+    /* Las imágenes ya no flotan sobre capítulos con texto: la galería las
+       presenta dentro de su propio flujo para que nunca tapen el contenido. */
+    .floating-obj { display: none; }
+
+    .ev-gallery {
+      padding: clamp(72px, 11vw, 130px) 6%;
+      background: #000;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .ev-gallery-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 28px;
+      margin-bottom: clamp(32px, 5vw, 56px);
+    }
+    .ev-gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      grid-auto-rows: clamp(105px, 12vw, 170px);
+      gap: clamp(10px, 1.4vw, 18px);
+    }
+    .ev-gallery-item {
+      -webkit-appearance: none;
+         -moz-appearance: none;
+              appearance: none;
+      position: relative;
+      display: block;
+      overflow: hidden;
+      min-height: 0;
+      padding: 0;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: #111;
+      color: #fff;
+      cursor: pointer;
+      text-align: left;
+      isolation: isolate;
+      transition: border-color .35s ease, transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease;
+    }
+    .ev-gallery-item:nth-child(1) { grid-column: span 5; grid-row: span 3; }
+    .ev-gallery-item:nth-child(2) { grid-column: span 3; grid-row: span 2; }
+    .ev-gallery-item:nth-child(3) { grid-column: span 4; grid-row: span 2; }
+    .ev-gallery-item:nth-child(4) { grid-column: span 3; grid-row: span 2; }
+    .ev-gallery-item:nth-child(5) { grid-column: span 4; grid-row: span 2; }
+    .ev-gallery-item img { width:100%; height:100%; -o-object-fit:cover; object-fit:cover; display:block; filter: saturate(.9) brightness(.78); transition: transform .65s cubic-bezier(.2,.8,.2,1), filter .35s ease; }
+    .ev-gallery-item::after { content:''; position:absolute; inset:0; z-index:1; background:linear-gradient(180deg, transparent 42%, rgba(0,0,0,.82) 100%); pointer-events:none; }
+    .ev-gallery-meta { position:absolute; z-index:2; left:clamp(12px,1.5vw,20px); right:12px; bottom:clamp(11px,1.5vw,18px); }
+    .ev-gallery-index { display:block; font-family:'Space Grotesk',sans-serif; font-size:10px; letter-spacing:.2em; color:#CC0000; margin-bottom:4px; }
+    .ev-gallery-name { display:block; font-family:'Bebas Neue',sans-serif; font-size:clamp(22px,2.8vw,38px); letter-spacing:.07em; line-height:1; }
+    .ev-gallery-open { position:absolute; z-index:3; top:14px; right:14px; width:34px; height:34px; display:grid; place-items:center; border:1px solid rgba(255,255,255,.35); border-radius:50%; background:rgba(0,0,0,.28); opacity:0; transform:translateY(6px); transition:opacity .3s ease, transform .3s ease; }
+    .ev-gallery-item:hover, .ev-gallery-item:focus-visible { border-color:#CC0000; transform:translateY(-5px); box-shadow:0 18px 40px rgba(204,0,0,.2); outline:none; }
+    .ev-gallery-item:hover img, .ev-gallery-item:focus-visible img { transform:scale(1.07); filter:saturate(1.15) brightness(.95); }
+    .ev-gallery-item:hover .ev-gallery-open, .ev-gallery-item:focus-visible .ev-gallery-open { opacity:1; transform:translateY(0); }
+
+    .ev-flyer {
+      padding: clamp(48px, 8vw, 96px) 6%;
+      background: #060606;
+    }
+    .ev-flyer-inner { max-width: 1280px; margin: 0 auto; }
+    .ev-flyer-art {
+      display: block;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.16);
+      background: #111;
+      box-shadow: 0 28px 90px rgba(204,0,0,.17);
+    }
+    .ev-flyer-art img { display: block; width: 100%; height: auto; }
+    .ev-flyer-footer { display:flex; align-items:center; justify-content:space-between; gap:22px; padding-top:18px; }
+    .ev-flyer-caption { font-family:'Space Grotesk',sans-serif; font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.42); }
+    .ev-flyer-cta { display:inline-block; padding:12px 19px; background:#CC0000; color:#fff; text-decoration:none; font-family:'Space Grotesk',sans-serif; font-size:11px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; transition:background .2s ease, transform .2s ease; }
+    .ev-flyer-cta:hover, .ev-flyer-cta:focus-visible { background:#e50000; transform:translateY(-2px); outline:none; }
+
+    /* Génesis contiene un manifiesto largo: en vez de forzarlo a una columna
+       angosta dentro de un viewport fijo, se lee como una pieza editorial. */
+    #ev-genesis-center {
+      max-width: min(700px, 52vw) !important;
+    }
+    #ev-genesis-center > div:last-child {
+      text-align: left;
+    }
+
     /* Card hover effects */
     [onClick*="openGallery"]:hover {
       transform: translateY(-5px) !important;
@@ -80,11 +177,82 @@
 
     @media (max-width: 768px) {
       #ev-deskbar { display: none !important; }
-      #ev-burger  { display: flex !important; }
+      #ev-burger { display: flex !important; }
+
+      /* MOBILE: Ocultar cards (interfieren) */
       #ev-genesis-left,
-      #ev-genesis-right { display: none !important; }
-      #ev-genesis-center { max-width: 85% !important; }
-      .floating-obj { display: none !important; }
+      #ev-genesis-right {
+        display: none !important;
+      }
+
+      #ev-genesis-center {
+        max-width: 85% !important;
+        text-align: center !important;
+      }
+
+      /* Objetos flotantes CENTRADOS */
+      .floating-obj {
+        width: 110px !important;
+        height: 155px !important;
+        opacity: 0.9 !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+      }
+
+      /* Comunidad: 2 objetos centrados (arriba y abajo) */
+      .floating-obj[data-float-id="3"] {
+        top: 8% !important;
+        bottom: auto !important;
+      }
+
+      .floating-obj[data-float-id="4"] {
+        top: auto !important;
+        bottom: 12% !important;
+      }
+
+      /* Umbral/Génesis: ocultar objetos */
+      .floating-obj[data-float-id="1"],
+      .floating-obj[data-float-id="2"] {
+        display: none !important;
+      }
+
+      /* Centrar palabras clave */
+      #comunidad [style*="display:grid"] {
+        justify-content: center !important;
+        gap: 20px 30px !important;
+      }
+
+      .ev-gallery-head { align-items: flex-start; flex-direction: column; }
+      .ev-gallery-grid { grid-auto-rows: 88px; gap: 9px; }
+      .ev-gallery-item:nth-child(1) { grid-column: span 7; grid-row: span 3; }
+      .ev-gallery-item:nth-child(2) { grid-column: span 5; grid-row: span 2; }
+      .ev-gallery-item:nth-child(3) { grid-column: span 5; grid-row: span 2; }
+      .ev-gallery-item:nth-child(4) { grid-column: span 5; grid-row: span 2; }
+      .ev-gallery-item:nth-child(5) { grid-column: span 7; grid-row: span 2; }
+      .ev-gallery-open { opacity: 1; transform: none; }
+      .ev-flyer-footer { align-items:flex-start; flex-direction:column; }
+
+      /* En móvil el manifiesto vuelve al flujo del documento: no hay texto
+         oculto ni necesidad de desplazarlo dentro de una pantalla sticky. */
+      #genesis { height: auto !important; }
+      #genesis > div {
+        position: relative !important;
+        top: auto !important;
+        height: auto !important;
+        min-height: 100svh;
+        padding: 112px 0 72px;
+      }
+      #ev-genesis-center {
+        max-width: 100% !important;
+        padding: 0 8% !important;
+      }
+      #ev-genesis-center > div:last-child { text-align: left; }
+      #genesis [data-ef] { opacity: 1 !important; transform: none !important; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
     }
   </style>
 </helmet>
@@ -100,6 +268,7 @@
     <a href="#manifesto" style="color:rgba(255,255,255,0.55);text-decoration:none;font-family:'Space Grotesk',sans-serif;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;transition:color 0.2s;" style-hover="color:#CC0000;">Historia</a>
     <a href="#comunidad" style="color:rgba(255,255,255,0.55);text-decoration:none;font-family:'Space Grotesk',sans-serif;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;transition:color 0.2s;" style-hover="color:#CC0000;">Comunidad</a>
     <a href="#agenda" style="color:rgba(255,255,255,0.55);text-decoration:none;font-family:'Space Grotesk',sans-serif;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;transition:color 0.2s;" style-hover="color:#CC0000;">Agenda</a>
+    <a href="#galeria" style="color:rgba(255,255,255,0.55);text-decoration:none;font-family:'Space Grotesk',sans-serif;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;transition:color 0.2s;" style-hover="color:#CC0000;">Galería</a>
     <a href="#contacto" style="color:rgba(255,255,255,0.55);text-decoration:none;font-family:'Space Grotesk',sans-serif;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;transition:color 0.2s;" style-hover="color:#CC0000;">Contacto</a>
     <a href="#agenda" style="background:#CC0000;color:#fff;text-decoration:none;font-family:'Space Grotesk',sans-serif;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;padding:10px 22px;font-weight:600;transition:background 0.2s;" style-hover="background:#e50000;">Entradas</a>
   </div>
@@ -117,6 +286,7 @@
   <a href="#manifesto" onClick="{{ closeMenu }}" style="font-family:'Bebas Neue',sans-serif;font-size:52px;color:#fff;text-decoration:none;letter-spacing:0.08em;" style-hover="color:#CC0000;">Historia</a>
   <a href="#comunidad" onClick="{{ closeMenu }}" style="font-family:'Bebas Neue',sans-serif;font-size:52px;color:#fff;text-decoration:none;letter-spacing:0.08em;" style-hover="color:#CC0000;">Comunidad</a>
   <a href="#agenda"    onClick="{{ closeMenu }}" style="font-family:'Bebas Neue',sans-serif;font-size:52px;color:#fff;text-decoration:none;letter-spacing:0.08em;" style-hover="color:#CC0000;">Agenda</a>
+  <a href="#galeria"   onClick="{{ closeMenu }}" style="font-family:'Bebas Neue',sans-serif;font-size:52px;color:#fff;text-decoration:none;letter-spacing:0.08em;" style-hover="color:#CC0000;">Galería</a>
   <a href="#contacto"  onClick="{{ closeMenu }}" style="font-family:'Bebas Neue',sans-serif;font-size:52px;color:#fff;text-decoration:none;letter-spacing:0.08em;" style-hover="color:#CC0000;">Contacto</a>
   <a href="#agenda"    onClick="{{ closeMenu }}" style="background:#CC0000;color:#fff;text-decoration:none;font-family:'Space Grotesk',sans-serif;font-size:14px;letter-spacing:0.22em;text-transform:uppercase;padding:14px 36px;font-weight:600;margin-top:8px;">Entradas</a>
 </div>
@@ -124,7 +294,7 @@
 <!-- ════════════════════════════ HERO ════════════════════════════ -->
 <section id="hero" style="position:relative;height:100vh;overflow:hidden;background:#000;">
 
-  <video id="ev-vid" autoPlay="{{ true }}" muted="{{ true }}" loop="{{ true }}" playsInline="{{ true }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:transform;transform-origin:center center;">
+  <video id="ev-vid" autoplay muted loop playsinline webkit-playsinline x5-playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:transform;transform-origin:center center;" poster="/uploads/logo-epic.png">
     <source src="/uploads/epic_hero.mp4" type="video/mp4">
   </video>
 
@@ -159,6 +329,11 @@
 <div data-epic-ch id="manifesto" style="height:220vh;position:relative;background:#000;">
   <div style="position:sticky;top:0;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#000;">
 
+    <!-- Floating Image 1 -->
+    <div class="floating-obj" data-float-id="1" style="top:60%;right:8%;width:clamp(140px,18vw,220px);height:clamp(200px,25vw,320px);">
+      <img src="/uploads/floating-3.jpg" alt="EPIC Performance">
+    </div>
+
     <!-- Ghost EPIC text (no animation, pure atmosphere) -->
     <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;overflow:hidden;">
       <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(160px,30vw,380px);color:rgba(204,0,0,0.04);line-height:1;white-space:nowrap;user-select:none;">EPIC</span>
@@ -190,13 +365,13 @@
       </div>
 
       <div data-ef="bottom" data-delay="0.3" data-dur="0.38" style="opacity:0;will-change:transform,opacity;">
-        <p style="font-family:'Space Grotesk',sans-serif;font-size:clamp(14px,1.7vw,17px);color:rgba(255,255,255,0.6);line-height:1.85;font-weight:300;text-wrap:pretty;">En la intersección entre la hospitalidad más pura y la producción técnica de vanguardia, co-creamos universos musicales donde la escucha profunda diseña experiencias seguras, inmersivas y profundamente humanas.</p>
+        <p style="font-family:'Space Grotesk',sans-serif;font-size:clamp(14px,1.7vw,17px);color:rgba(255,255,255,0.6);line-height:1.85;font-weight:300;text-wrap:pretty;">Cruzamos hospitalidad y producción de vanguardia para crear universos sonoros seguros, inmersivos y profundamente humanos.</p>
       </div>
 
       <div data-ef="scale" data-delay="0.5" data-dur="0.28" style="opacity:0;margin:30px auto;width:48px;height:3px;background:#CC0000;transform-origin:center;will-change:transform,opacity;"></div>
 
       <div data-ef="bottom" data-delay="0.55" data-dur="0.35" style="opacity:0;will-change:transform,opacity;">
-        <p style="font-family:'Space Grotesk',sans-serif;font-size:clamp(12px,1.4vw,15px);color:rgba(255,255,255,0.4);font-style:italic;line-height:1.8;text-wrap:pretty;">Cada edición es una invitación a formar parte de una comunidad que se reconoce en la excelencia y trasciende en cada experiencia compartida.</p>
+        <p style="font-family:'Space Grotesk',sans-serif;font-size:clamp(12px,1.4vw,15px);color:rgba(255,255,255,0.4);font-style:italic;line-height:1.8;text-wrap:pretty;">Cada edición es una invitación a una comunidad que se reconoce en la excelencia — y vuelve por eso.</p>
       </div>
     </div>
 
@@ -213,6 +388,11 @@
 <div data-epic-ch id="genesis" style="height:300vh;position:relative;background:#060606;">
   <div style="position:sticky;top:0;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#060606;">
 
+    <!-- Floating Image 2 -->
+    <div class="floating-obj" data-float-id="2" style="top:8%;left:50%;transform:translateX(-50%);width:clamp(120px,16vw,200px);height:clamp(170px,22vw,280px);">
+      <img src="/uploads/floating-1.jpg" alt="EPIC Art">
+    </div>
+
     <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;overflow:hidden;">
       <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(120px,24vw,300px);color:rgba(255,255,255,0.015);line-height:1;white-space:nowrap;user-select:none;letter-spacing:0.04em;">GÉNESIS</span>
     </div>
@@ -220,12 +400,14 @@
     <!-- Left card wrapper (position only) -->
     <div id="ev-genesis-left" style="position:absolute;left:4%;top:50%;transform:translateY(-50%);z-index:2;">
       <div data-ef="left" data-delay="0" data-dur="0.38" style="opacity:0;will-change:transform,opacity;">
-        <div style="width:clamp(150px,20vw,240px);background:#0c0c0c;border:1px solid rgba(255,255,255,0.06);">
+        <div style="width:clamp(150px,20vw,240px);background:#0c0c0c;border:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:transform 0.3s ease;" onClick="{{ () => openGallery(1) }}">
           <div style="height:clamp(190px,28vw,310px);position:relative;overflow:hidden;background:#080808;">
-            <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 90%,rgba(204,0,0,0.3) 0%,transparent 62%);"></div>
-            <div style="position:absolute;bottom:14px;left:14px;width:22px;height:38px;background:#CC0000;transform:skewX(-12deg);"></div>
-            <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,0.005) 2px,rgba(255,255,255,0.005) 4px);"></div>
-            <div style="position:absolute;bottom:10px;left:12px;font-family:'Bebas Neue',sans-serif;font-size:clamp(65px,11vw,105px);line-height:1;color:rgba(255,255,255,0.03);user-select:none;">001</div>
+            <img src="/uploads/floating-2.jpg" alt="EPIC I" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.6;z-index:0;">
+            <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);z-index:1;"></div>
+            <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 90%,rgba(204,0,0,0.3) 0%,transparent 62%);z-index:2;"></div>
+            <div style="position:absolute;bottom:14px;left:14px;width:22px;height:38px;background:#CC0000;transform:skewX(-12deg);z-index:4;"></div>
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,0.005) 2px,rgba(255,255,255,0.005) 4px);z-index:3;"></div>
+            <div style="position:absolute;bottom:10px;left:12px;font-family:'Bebas Neue',sans-serif;font-size:clamp(65px,11vw,105px);line-height:1;color:#fff;user-select:none;z-index:10;text-shadow:0 6px 40px rgba(0,0,0,1), 0 2px 10px rgba(0,0,0,0.8), 0 0 30px rgba(204,0,0,0.7);font-weight:900;">001</div>
           </div>
           <div style="padding:14px 16px;border-top:2px solid #CC0000;">
             <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:#fff;letter-spacing:0.05em;line-height:1;">EPIC I</div>
@@ -247,7 +429,7 @@
       </div>
 
       <div data-ef="bottom" data-delay="0.44" data-dur="0.36" style="opacity:0;will-change:transform,opacity;">
-        <p style="font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,1.5vw,16px);color:rgba(255,255,255,0.55);line-height:1.85;font-weight:300;text-wrap:pretty;">El punto de inflexión fue el desprendimiento de un primer refugio físico. La intuición se transformó en certeza: si era posible diseñar mundos de alta calidad dentro de una casa, era el momento de construirlos para el mundo exterior.</p>
+        <p style="font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,1.5vw,16px);color:rgba(255,255,255,0.55);line-height:1.85;font-weight:300;text-wrap:pretty;">Toda estructura sólida posee un origen anclado en la hospitalidad genuina: EPIC no surgió como una ambición comercial, sino de la visión de comprender el encuentro humano como una forma superior de arte, en la calidez de un hogar propio donde la mística sonora se compartía bajo el resguardo de la intimidad. El desprendimiento de ese primer refugio físico marcó el punto de inflexión: la intuición se transformó en certeza operativa — si era posible diseñar mundos de alta calidad dentro de una casa, era el momento de construirlos para el mundo exterior. Esa chispa inicial evolucionó hacia una curaduría artesanal, sostenida por la precisión técnica y el rigor de una producción de nivel internacional, conquistada con un único fin: otorgar libertad, asegurando mediante un cuidado silencioso que cada encuentro sea un lugar seguro donde la magia se protege — y lo que alguna vez comenzó bajo un techo personal, hoy florece en la celebración vibrante de una gran familia.</p>
       </div>
     </div>
 
@@ -311,7 +493,7 @@
       </div>
 
       <div data-ef="bottom" data-delay="0.56" data-dur="0.36" style="opacity:0;max-width:540px;margin:0 auto;will-change:transform,opacity;">
-        <p style="font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,1.6vw,17px);color:rgba(255,255,255,0.55);line-height:1.85;font-weight:300;text-wrap:pretty;">La seguridad física y psicológica funciona como el cimiento invisible, indispensable para que la expresión individual se eleve y permita a cada asistente, simplemente, gozar.</p>
+        <p style="font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,1.6vw,17px);color:rgba(255,255,255,0.55);line-height:1.85;font-weight:300;text-wrap:pretty;">La seguridad, física y psicológica, es el cimiento invisible que te permite soltarte y, simplemente, gozar.</p>
       </div>
 
       <div data-ef="scale" data-delay="0.72" data-dur="0.25" style="opacity:0;margin:28px auto 0;width:100%;max-width:360px;height:1px;background:linear-gradient(to right,transparent,#CC0000,transparent);will-change:transform,opacity;"></div>
@@ -369,6 +551,58 @@
   </div>
 </section>
 
+<!-- ════════════════════════════ FLYER PRIDE ════════════════════════════ -->
+<section class="ev-flyer" aria-label="EPIC Pride 2026">
+  <div class="ev-flyer-inner" data-reveal>
+    <a class="ev-flyer-art" href="https://cobraticket.uy/e/epic-pride-2026-969827" target="_blank" rel="noreferrer" aria-label="Comprar entradas para EPIC Pride 2026">
+      <img src="/uploads/epic-pride-2026-flyer.png" alt="Flyer EPIC Pride: Key City, Santi Domínguez, Malevo B2B Zafira Arión y Piccolino. 25 de septiembre, 23 horas, L'Club Montevideo." loading="lazy">
+    </a>
+    <div class="ev-flyer-footer">
+      <p class="ev-flyer-caption">EPIC Pride · 25.09 · L'Club, Montevideo</p>
+      <a class="ev-flyer-cta" href="https://cobraticket.uy/e/epic-pride-2026-969827" target="_blank" rel="noreferrer">Comprar entradas ↗</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════ GALERÍA ════════════════════════════ -->
+<section id="galeria" class="ev-gallery" aria-labelledby="ev-gallery-title">
+  <div class="ev-gallery-head" data-reveal>
+    <div>
+      <p style="font-family:'Space Grotesk',sans-serif;font-size:clamp(10px,1.1vw,12px);letter-spacing:.32em;text-transform:uppercase;color:#CC0000;margin-bottom:14px;">Postales de la pista</p>
+      <h2 id="ev-gallery-title" style="font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,8.5vw,106px);color:#fff;letter-spacing:.04em;line-height:1;">La noche en imágenes</h2>
+    </div>
+    <p style="font-family:'Space Grotesk',sans-serif;font-size:clamp(12px,1.4vw,15px);line-height:1.75;color:rgba(255,255,255,.45);max-width:310px;font-weight:300;">Momentos de comunidad, libertad y música. Tocá una imagen para verla en grande.</p>
+  </div>
+
+  <div class="ev-gallery-grid" aria-label="Galería de fotos de EPIC">
+    <button class="ev-gallery-item" data-reveal type="button" onClick="{{ () => openGallery(1) }}" aria-label="Abrir foto: EPIC I">
+      <img src="/uploads/floating-2.jpg" alt="Asistentes de EPIC I en la pista de baile" loading="lazy">
+      <span class="ev-gallery-open" aria-hidden="true">↗</span>
+      <span class="ev-gallery-meta"><span class="ev-gallery-index">01 / EPIC</span><span class="ev-gallery-name">La pista</span></span>
+    </button>
+    <button class="ev-gallery-item" data-reveal type="button" onClick="{{ () => openGallery(2) }}" aria-label="Abrir foto: Luces EPIC">
+      <img src="/uploads/floating-1.jpg" alt="Luces y producción visual de una noche EPIC" loading="lazy">
+      <span class="ev-gallery-open" aria-hidden="true">↗</span>
+      <span class="ev-gallery-meta"><span class="ev-gallery-index">02 / EPIC</span><span class="ev-gallery-name">Energía</span></span>
+    </button>
+    <button class="ev-gallery-item" data-reveal type="button" onClick="{{ () => openGallery(3) }}" aria-label="Abrir foto: Comunidad EPIC">
+      <img src="/uploads/floating-5.jpg" alt="Comunidad EPIC celebrando junta" loading="lazy">
+      <span class="ev-gallery-open" aria-hidden="true">↗</span>
+      <span class="ev-gallery-meta"><span class="ev-gallery-index">03 / EPIC</span><span class="ev-gallery-name">Comunidad</span></span>
+    </button>
+    <button class="ev-gallery-item" data-reveal type="button" onClick="{{ () => openGallery(4) }}" aria-label="Abrir foto: Movimiento EPIC">
+      <img src="/uploads/floating-4.jpg" alt="Artista y asistentes en movimiento durante EPIC" loading="lazy">
+      <span class="ev-gallery-open" aria-hidden="true">↗</span>
+      <span class="ev-gallery-meta"><span class="ev-gallery-index">04 / EPIC</span><span class="ev-gallery-name">Movimiento</span></span>
+    </button>
+    <button class="ev-gallery-item" data-reveal type="button" onClick="{{ () => openGallery(5) }}" aria-label="Abrir foto: Libertad EPIC">
+      <img src="/uploads/floating-3.jpg" alt="Una noche de libertad y expresión en EPIC" loading="lazy">
+      <span class="ev-gallery-open" aria-hidden="true">↗</span>
+      <span class="ev-gallery-meta"><span class="ev-gallery-index">05 / EPIC</span><span class="ev-gallery-name">Libertad</span></span>
+    </button>
+  </div>
+</section>
+
 <!-- ════════════════════════════ LIGHTBOX MODAL ════════════════════════════ -->
 <div id="ev-lightbox" onClick="{{ closeLightbox }}" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.95);backdrop-filter:blur(20px);align-items:center;justify-content:center;padding:20px;">
   <button onClick="{{ closeLightbox }}" style="position:absolute;top:20px;right:20px;background:rgba(204,0,0,0.9);border:none;color:#fff;font-size:32px;width:50px;height:50px;border-radius:50%;cursor:pointer;font-family:'Space Grotesk',sans-serif;display:flex;align-items:center;justify-content:center;z-index:10000;transition:background 0.2s;" style-hover="background:#e50000;">✕</button>
@@ -393,7 +627,29 @@ class Component extends DCLogic {
   componentDidMount() {
     // Force video playback (needed for some mobile browsers)
     const vid = document.getElementById('ev-vid');
-    if (vid) { vid.muted = true; vid.play().catch(() => {}); }
+    if (vid) {
+      vid.muted = true;
+      vid.setAttribute('muted', '');
+      vid.setAttribute('playsinline', '');
+      vid.setAttribute('webkit-playsinline', '');
+
+      // Multiple attempts to play
+      const tryPlay = () => {
+        vid.play().catch(() => {
+          setTimeout(tryPlay, 500);
+        });
+      };
+      tryPlay();
+
+      // Also try on user interaction
+      const playOnInteraction = () => {
+        vid.play();
+        document.removeEventListener('touchstart', playOnInteraction);
+        document.removeEventListener('click', playOnInteraction);
+      };
+      document.addEventListener('touchstart', playOnInteraction, { once: true });
+      document.addEventListener('click', playOnInteraction, { once: true });
+    }
 
     // Hero entrance via React state — survives re-renders
     setTimeout(() => this.setState({ heroVisible: true }), 80);
@@ -404,6 +660,21 @@ class Component extends DCLogic {
       .then(data => this.setState({ events: data }))
       .catch(() => {});
 
+    // Reveals without depender de animation-timeline (Firefox y navegadores antiguos).
+    const revealObserver = 'IntersectionObserver' in window
+      ? new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          });
+        }, { threshold: 0.12 })
+      : null;
+    document.querySelectorAll('[data-reveal]').forEach(el => {
+      if (revealObserver) revealObserver.observe(el);
+      else el.classList.add('visible');
+    });
+
     let raf = null;
 
     const update = () => {
@@ -411,14 +682,18 @@ class Component extends DCLogic {
       const sy  = window.scrollY;
       const vh  = window.innerHeight;
 
-      // ── Hero: video parallax + content fade ──
-      if (vid) vid.style.transform = `scale(1.1) translateY(${sy * 0.1}px)`;
+      // ── Hero: Apple-style subtle parallax ──
+      if (vid) {
+        vid.style.transform = `scale(1.05) translateY(${sy * 0.05}px)`;
+        vid.style.transition = 'transform 0.1s ease-out';
+      }
 
       const heroTxt = document.getElementById('ev-hero-txt');
       if (heroTxt) {
-        const p = Math.min(1, sy / (vh * 0.68));
-        heroTxt.style.opacity = String(Math.max(0, 1 - p * 1.3));
-        heroTxt.style.transform = `translateY(${sy * 0.16}px)`;
+        const p = Math.min(1, sy / (vh * 0.7));
+        heroTxt.style.opacity = String(Math.max(0, 1 - p * 1.2));
+        heroTxt.style.transform = `translateY(${sy * 0.12}px)`;
+        heroTxt.style.transition = 'opacity 0.1s ease-out, transform 0.1s ease-out';
       }
 
       // ── Nav backdrop ──
@@ -430,24 +705,6 @@ class Component extends DCLogic {
         nav.style.webkitBackdropFilter = scrolled ? 'blur(14px)'                  : 'none';
         nav.style.borderBottom     = scrolled ? '1px solid rgba(204,0,0,0.12)'    : 'none';
       }
-
-      // ── Floating objects parallax ──
-      document.querySelectorAll('.floating-obj').forEach(obj => {
-        const id = obj.dataset.floatId;
-        const rect = obj.getBoundingClientRect();
-        const inView = rect.top < vh && rect.bottom > 0;
-
-        if (inView) {
-          obj.classList.add('visible');
-          // Different parallax speeds for each object
-          const speed = id === '1' ? 0.15 : id === '2' ? 0.22 : id === '3' ? 0.18 : 0.2;
-          const centerY = rect.top + rect.height / 2;
-          const offset = (vh / 2 - centerY) * speed;
-          obj.style.transform = `translateY(${offset}px) rotate(${offset * 0.02}deg)`;
-        } else {
-          obj.classList.remove('visible');
-        }
-      });
 
       // ── Chapter scroll animations ──
       document.querySelectorAll('[data-epic-ch]').forEach(ch => {
@@ -494,6 +751,7 @@ class Component extends DCLogic {
     window.addEventListener('scroll', onScroll, { passive: true });
     this._cleanup = () => {
       window.removeEventListener('scroll', onScroll);
+      if (revealObserver) revealObserver.disconnect();
       if (raf) cancelAnimationFrame(raf);
     };
     update(); // initial state
@@ -577,7 +835,9 @@ class Component extends DCLogic {
         const images = {
           1: '/uploads/floating-2.jpg',
           2: '/uploads/floating-1.jpg',
-          3: '/uploads/floating-5.jpg'
+          3: '/uploads/floating-5.jpg',
+          4: '/uploads/floating-4.jpg',
+          5: '/uploads/floating-3.jpg'
         };
         const lightbox = document.getElementById('ev-lightbox');
         const img = document.getElementById('ev-lightbox-img');
