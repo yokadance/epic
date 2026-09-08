@@ -302,6 +302,7 @@
       #ev-genesis-center > div:nth-child(3) { text-align: left; }
       #genesis [data-ef] { opacity: 1 !important; transform: none !important; }
       .ev-genesis-photo { display: none; }
+      #ev-genesis-ghost { display: none !important; }
       .ev-genesis-mobile-photos { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:28px; }
       .ev-genesis-mobile-photos img { display:block; width:100%; aspect-ratio:3/4; -o-object-fit:cover; object-fit:cover; border:1px solid rgba(255,255,255,.14); filter:brightness(.8) saturate(.92); }
     }
@@ -394,13 +395,6 @@
       <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(160px,30vw,380px);color:rgba(204,0,0,0.04);line-height:1;white-space:nowrap;user-select:none;">EPIC</span>
     </div>
 
-    <!-- Decorative slash — position wrapper -->
-    <div style="position:absolute;right:7%;top:50%;transform:translateY(-50%);z-index:1;">
-      <div data-ef="right" data-delay="0.25" data-dur="0.4" style="opacity:0;will-change:transform,opacity;">
-        <div style="width:clamp(36px,5vw,68px);height:clamp(56px,8vw,108px);background:#CC0000;transform:skewX(-12deg);box-shadow:0 0 60px rgba(204,0,0,0.35);"></div>
-      </div>
-    </div>
-
     <!-- Left decoration: thin vertical line -->
     <div style="position:absolute;left:6%;top:50%;transform:translateY(-50%);">
       <div data-ef="left" data-delay="0" data-dur="0.3" style="opacity:0;will-change:transform,opacity;">
@@ -448,7 +442,7 @@
       <img src="/uploads/floating-1.jpg" alt="EPIC Art">
     </div>
 
-    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;overflow:hidden;">
+    <div id="ev-genesis-ghost" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;overflow:hidden;transition:opacity .3s ease;">
       <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(120px,24vw,300px);color:rgba(255,255,255,0.06);line-height:1;white-space:nowrap;user-select:none;letter-spacing:0.04em;">GÉNESIS</span>
     </div>
 
@@ -808,6 +802,13 @@ class Component extends DCLogic {
         const scrollable = ch.offsetHeight - vh;
         if (scrollable <= 0) return;
         const prog = Math.max(0, Math.min(1, -rect.top / scrollable));
+
+        // El rótulo ambiental de Génesis abre el capítulo y cede el lugar al
+        // manifiesto antes de que entren el subtítulo y el texto principal.
+        if (ch.id === 'genesis') {
+          const ghost = document.getElementById('ev-genesis-ghost');
+          if (ghost) ghost.style.opacity = String(Math.max(0, 1 - prog / 0.18));
+        }
 
         ch.querySelectorAll('[data-ef]').forEach(el => {
           const ef    = el.dataset.ef;
