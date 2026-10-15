@@ -84,18 +84,32 @@
     "notes": ""
   },
   {
-    "edition": "IV",
+    "edition": "PRIDE",
     "title": "EPIC PRIDE",
     "date": "2026-09-25",
     "dateLabel": "25 Septiembre 2026",
     "dayLabel": "Viernes",
     "venue": "LClub",
-    "ticketUrl": "https://cobraticket.uy/e/epic-pride-2026-969827",
-    "instagramUrl": null,
+    "ticketUrl": null,
+    "instagramUrl": "https://www.instagram.com/reel/DePtVcMtZ_A/",
     "coverImage": null,
-    "flyer": null,
+    "flyer": "/uploads/epic-pride-2026-flyer.png",
     "gallery": [],
     "notes": "Edición especial LGBTQ+"
+  },
+  {
+    "edition": "ANIVERSARIO II",
+    "title": "EPIC ANIVERSARIO II",
+    "date": "2026-11-14",
+    "dateLabel": "14 Noviembre 2026",
+    "dayLabel": "Sábado",
+    "venue": "LClub",
+    "ticketUrl": "https://www.cobraticket.uy/e/epic-aniversario-ii-extended-054494",
+    "instagramUrl": null,
+    "coverImage": null,
+    "flyer": "/uploads/epic-aniversario-ii-flyer.png",
+    "gallery": [],
+    "notes": "Extended · 23:30–10AM · Non Stop"
   },
   {
     "edition": "V",
